@@ -4,98 +4,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Youth Assembly Games</title>
+    <title>Youth Assembly Games - Host</title>
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@300;400;600;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <div id="app" class="app-container">
+    <div id="app" class="dashboard-layout">
 
-        <!-- Projector Overlay (Click to start audio context) -->
+        <!-- 1. LEFT SIDEBAR: LIBRARY -->
+        <aside class="panel-left">
+            <div class="panel-header">
+                <h3><i class="fas fa-gamepad"></i> Library</h3>
+            </div>
+            <div class="search-container">
+                <input type="search" id="game-search" placeholder="Search games..."
+                    oninput="gamesApp.filterGames(this.value)">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <div id="games-list" class="games-list-scroll">
+                <!-- Games injected here -->
+            </div>
+        </aside>
+
+        <!-- 2. CENTER STAGE: CONTROLS -->
+        <main class="panel-center">
+
+            <!-- Active Game Header (Dynamic) -->
+            <header id="active-game-header" class="stage-header hidden">
+                <div class="game-meta">
+                    <span class="badg">LIVE</span>
+                    <h2 id="current-game-title">Game Title</h2>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-sm btn-outline-danger" onclick="gamesApp.renderHome()">
+                        <i class="fas fa-stop-circle"></i> Stop
+                    </button>
+                    <button class="btn btn-sm btn-accent" onclick="gamesApp.openProjectorWindow()">
+                        <i class="fas fa-external-link-alt"></i> Projector
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dynamic Controls Container -->
+            <div id="dynamic-controls" class="controls-container">
+                <!-- Default Empty State -->
+                <div class="empty-state">
+                    <div class="icon-circle">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h1>Ready to Launch</h1>
+                    <p>Select a game from the library on the left to begin hosting.</p>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- 3. TOP RIGHT: PREVIEW WIDGET -->
+        <div id="preview-widget" class="preview-widget">
+            <div class="preview-bar">
+                <div class="pb-left">
+                    <div class="live-dot"></div>
+                    <span>LIVE OUTPUT</span>
+                </div>
+                <!-- Added Minimize Button -->
+                <div class="pb-right" style="display:flex; align-items:center; gap:10px;">
+                    <button onclick="gamesApp.togglePreview()" title="Minimize"
+                        style="background:none; border:none; color:white; cursor:pointer;">
+                        <i id="min-icon" class="fas fa-minus"></i>
+                    </button>
+                    <span id="mini-clock">00:00</span>
+                </div>
+            </div>
+            <!-- This container mirrors the projector content -->
+            <div id="game-container" class="preview-screen"></div>
+            <!-- Resize Handle -->
+            <div id="resize-handle" class="resize-handle"><i class="fas fa-expand-alt"></i></div>
+        </div>
+
+        <!-- 4. BOTTOM DOCK: SOUND & TOOLS -->
+        <footer class="panel-bottom" id="sound-dock-panel">
+            <!-- Resize Handle for Dock -->
+            <div id="dock-resizer" class="dock-resizer"></div>
+
+            <!-- Audio Section -->
+            <div class="dock-cluster">
+                <div class="cluster-label">Audio Atmosphere</div>
+                <div class="cluster-controls">
+                    <button id="bgm-btn" class="dock-btn" onclick="gamesApp.toggleBGM()">
+                        <i class="fas fa-music"></i> BGM
+                    </button>
+                    <div class="vol-wrapper">
+                        <i class="fas fa-volume-down text-muted"></i>
+                        <input type="range" class="dock-slider" min="0" max="1" step="0.1" value="0.3"
+                            oninput="gamesApp.setBGMVolume(this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="dock-separator"></div>
+
+            <!-- SFX Section -->
+            <div class="dock-cluster flex-grow">
+                <div class="cluster-label">Instant SFX</div>
+                <div class="sfx-row">
+                    <button class="sfx-pill correct" onclick="gamesApp.playSFX('correct')">✅ Correct</button>
+                    <button class="sfx-pill wrong" onclick="gamesApp.playSFX('wrong')">❌ Wrong</button>
+                    <button class="sfx-pill" onclick="gamesApp.playSFX('applause')">👏 Applause</button>
+                    <button class="sfx-pill" onclick="gamesApp.playSFX('drumroll')">🥁 Drumroll</button>
+                    <button class="sfx-pill" onclick="gamesApp.playSFX('laugh')">😂 Laugh</button>
+                    <button class="sfx-pill" onclick="gamesApp.playSFX('boo')">👎 Boo</button>
+                    <button class="sfx-pill" onclick="gamesApp.playSFX('airhorn')">📢 Airhorn</button>
+                    <button class="sfx-pill" onclick="gamesApp.playSFX('fanfare')">🎺 Fanfare</button>
+                </div>
+            </div>
+
+        </footer>
+
+        <!-- Projector Overlay (Only valid in projector mode, but kept in DOM) -->
         <div id="projector-overlay" class="projector-overlay hidden">
             <div class="overlay-content">
                 <h1>📽️ Projector Mode</h1>
-                <p>Click anywhere to enable audio & sync.</p>
+                <p>Click to initialize audio</p>
             </div>
         </div>
 
-        <!-- HOST PANEL (Visible only in Host Window) -->
-        <div id="host-panel-container" class="host-sidebar">
-            <div class="host-header">
-                <h3><i class="fas fa-gamepad"></i> Host Control</h3>
-                <div class="window-controls">
-                    <button class="btn btn-sm btn-accent" onclick="gamesApp.openProjectorWindow()">🚀 Open
-                        Projector</button>
-                </div>
-            </div>
-
-            <!-- Sidebar Tabs -->
-            <div class="sidebar-tabs">
-                <button class="tab-btn active" onclick="gamesApp.switchTab('games')">Games</button>
-                <button class="tab-btn" onclick="gamesApp.switchTab('controls')">Controls</button>
-            </div>
-
-            <div class="host-scroll-area">
-                <!-- Tab: Games List -->
-                <div id="tab-games" class="sidebar-tab-content active">
-                    <div class="p-2 sticky-top"
-                        style="background:var(--bg-card); border-bottom:1px solid rgba(255,255,255,0.05); margin-bottom:10px;">
-                        <input type="search" id="game-search-input" class="form-control w-100"
-                            placeholder="🔍 Search games..." oninput="gamesApp.filterGames(this.value)"
-                            style="padding:8px; border-radius:6px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:white;">
-                    </div>
-                    <div id="sidebar-games-list" class="sidebar-list">
-                        <!-- Injected via JS -->
-                        <div class="text-center text-muted p-2">Loading games...</div>
-                    </div>
-                </div>
-
-                <!-- Tab: Controls -->
-                <div id="tab-controls" class="sidebar-tab-content">
-                    <div id="current-game-header" class="now-playing-card" style="display:none;">
-                        <div class="np-info">
-                            <span class="np-label">NOW PLAYING</span>
-                            <h4 id="active-game-title" class="np-title">No Game Selected</h4>
-                        </div>
-                        <button class="btn btn-sm btn-outline-danger" onclick="gamesApp.renderHome()">
-                            <i class="fas fa-stop"></i> Stop
-                        </button>
-                    </div>
-
-                    <!-- Dynamic Game Controls -->
-                    <div id="dynamic-host-controls" class="control-section">
-                        <p class="text-muted text-center mt-4">Select a game from the "Games" tab to start.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="host-footer">
-                <div class="clock" id="host-clock">00:00</div>
-                <div class="status-dot"></div>
-            </div>
-        </div>
-
-        <!-- MAIN DISPLAY (Content Area) -->
-        <!-- In Host Mode: Shows preview -->
-        <!-- In Projector Mode: Shows Full Screen Content -->
-        <div id="main-display" class="main-display">
-            <!-- Navigation Header (Only valid in Host Mode preview, usually hidden in Projector) -->
-            <header class="top-nav" id="top-nav">
-                <div class="logo">🚀 Youth Assembly Games</div>
-                <div class="clock" id="main-clock">00:00</div>
-            </header>
-
-            <main id="game-container" class="game-container">
-                <!-- Dynamic Content Injected Here -->
-            </main>
-        </div>
     </div>
 
     <script src="data.js"></script>

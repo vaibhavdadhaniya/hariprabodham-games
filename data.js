@@ -4,6 +4,7 @@ const GAMES_DATA = {
         icon: "fa-theater-masks",
         description: "Reveal the blurred emoji/image.",
         type: "slider_reveal",
+        rules: ["Only a small part is revealed.", "Guess the mood/emoji.", "Shout out your answer!"],
         content: [
             { image: "😊", answer: "Happy" },
             { image: "😡", answer: "Angry" },
@@ -32,22 +33,23 @@ const GAMES_DATA = {
         icon: "fa-puzzle-piece",
         description: "Clues reveal the hidden word.",
         type: "timed_clues",
+        rules: ["You will see a Category.", "Clues will appear one by one.", "Guess the word before time runs out!", "Shout your answer!"],
         content: [
-            { word: "Unity", clues: ["Spiritual", "Components", "Togetherness"] },
-            { word: "Music", clues: ["Sound", "Earphones", "Beat"] },
-            { word: "Future", clues: ["Time", "Tomorrow", "Hope"] },
-            { word: "History", clues: ["Past", "School Subject", "Dates"] },
-            { word: "Water", clues: ["Liquid", "Ocean", "Drink"] },
-            { word: "Fire", clues: ["Hot", "Red", "Camp"] },
-            { word: "Earth", clues: ["Planet", "Soil", "Ground"] },
-            { word: "Air", clues: ["Breath", "Wind", "Invisible"] },
-            { word: "Space", clues: ["Stars", "Void", "NASA"] },
-            { word: "Light", clues: ["Sun", "Bright", "Lamp"] },
-            { word: "Shadow", clues: ["Dark", "Follows You", "Night"] },
-            { word: "Mirror", clues: ["Reflect", "Glass", "Look"] },
-            { word: "Camera", clues: ["Photo", "Lens", "Click"] },
-            { word: "Phone", clues: ["Call", "App", "Mobile"] },
-            { word: "Book", clues: ["Read", "Pages", "Story"] }
+            { word: "Unity", category: "Concept", clues: ["Spiritual", "Components", "Togetherness"] },
+            { word: "Music", category: "Art", clues: ["Sound", "Earphones", "Beat"] },
+            { word: "Future", category: "Time", clues: ["Time", "Tomorrow", "Hope"] },
+            { word: "History", category: "Subject", clues: ["Past", "School Subject", "Dates"] },
+            { word: "Water", category: "Element", clues: ["Liquid", "Ocean", "Drink"] },
+            { word: "Fire", category: "Element", clues: ["Hot", "Red", "Camp"] },
+            { word: "Earth", category: "Planet", clues: ["Planet", "Soil", "Ground"] },
+            { word: "Air", category: "Element", clues: ["Breath", "Wind", "Invisible"] },
+            { word: "Space", category: "Place", clues: ["Stars", "Void", "NASA"] },
+            { word: "Light", category: "Physics", clues: ["Sun", "Bright", "Lamp"] },
+            { word: "Shadow", category: "Nature", clues: ["Dark", "Follows You", "Night"] },
+            { word: "Mirror", category: "Object", clues: ["Reflect", "Glass", "Look"] },
+            { word: "Camera", category: "Device", clues: ["Photo", "Lens", "Click"] },
+            { word: "Phone", category: "Device", clues: ["Call", "App", "Mobile"] },
+            { word: "Book", category: "Object", clues: ["Read", "Pages", "Story"] }
         ]
     },
     riddle_challenge: {
@@ -55,6 +57,7 @@ const GAMES_DATA = {
         icon: "fa-question-circle",
         description: "Solve the brain teaser.",
         type: "reveal_answer",
+        rules: ["Read the riddle carefully.", "Think outside the box.", "Raise your hand to answer."],
         content: [
             { question: "What comes down but never goes up?", answer: "Rain" },
             { question: "I hove branches, but no fruit, trunk or leaves.", answer: "A Bank" },
@@ -78,6 +81,7 @@ const GAMES_DATA = {
         icon: "fa-laugh-squint",
         description: "Caption the image live!",
         type: "image_display",
+        rules: ["Look at the funny image.", "Think of a funny caption.", "Best caption wins!"],
         content: [
             { image: "https://i.imgflip.com/1g8my4.jpg" },
             { image: "https://i.imgflip.com/26am.jpg" },
@@ -101,6 +105,7 @@ const GAMES_DATA = {
         icon: "fa-headphones",
         description: "Listen and identify.",
         type: "audio_play",
+        rules: ["Listen to the sound.", "Identify what makes it.", "Keep quiet while listening!"],
         content: [
             { audio: "", answer: "Elephant" },
             { audio: "", answer: "Car Horn" },
@@ -124,6 +129,7 @@ const GAMES_DATA = {
         icon: "fa-pencil-alt",
         description: "Complete the phrase.",
         type: "text_complete",
+        rules: ["Read the incomplete sentence.", "Fill in the blank.", "Make it creative or funny!"],
         content: [
             { sentence: "If I could fly, I would ____", clues: ["Travel", "Moon", "Cloud"], answer: "Travel the World" },
             { sentence: "My favorite food is ____", clues: ["Pizza", "Burger", "Salad"], answer: "Pizza" },
@@ -147,6 +153,7 @@ const GAMES_DATA = {
         icon: "fa-shapes",
         description: "Patterns and Logic.",
         type: "reveal_answer",
+        rules: ["Analyze the pattern.", "Find the missing piece/number.", "Explain your logic."],
         content: [
             { puzzle: "2, 4, 8, 16, ?", answer: "32" },
             { puzzle: "O, T, T, F, F, ?", answer: "S (Six)" },
@@ -170,6 +177,7 @@ const GAMES_DATA = {
         icon: "fa-link",
         description: "Start a chain reaction.",
         type: "word_chain",
+        rules: ["See the starting word.", "Say the next word associated with it.", "Keep the chain going fast!"],
         content: [
             { start_word: "YOUTH" },
             { start_word: "ASSEMBLY" },
@@ -193,11 +201,11 @@ const GAMES_DATA = {
         icon: "fa-stopwatch",
         description: "Quick fire tasks.",
         type: "challenge_timer",
+        rules: ["Read the challenge.", "You have 30 seconds.", "Complete it before the buzzer!"],
         content: [
             { challenge: "Stand on one leg" },
             { challenge: "Don't blink!" },
             { challenge: "Name 3 Countries in Asia" },
-            { challenge: "Count backwards from 20" },
             { challenge: "Name 5 Vegetables" },
             { challenge: "Name 5 Brands" },
             { challenge: "Say alphabet backwards Z-T" },
@@ -227,6 +235,7 @@ const GAMES_DATA = {
         icon: "fa-spinner",
         description: "Spin for a result.",
         type: "spin_wheel",
+        rules: ["Spin the wheel.", "Perform the action or take the team.", "No re-spins!"],
         content: [
             { outcomes: ["Team A", "Team B", "Team C", "Team D"] },
             { outcomes: ["Sing", "Dance", "Joke", "Story"] }
@@ -237,6 +246,7 @@ const GAMES_DATA = {
         icon: "fa-clock",
         description: "Countdown.",
         type: "universal_timer",
+        rules: ["Set the time.", "Wait for the countdown.", "Focus on your task."],
         content: [{}]
     }
 };
