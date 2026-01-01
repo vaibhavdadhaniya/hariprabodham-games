@@ -67,11 +67,45 @@ const gamesApp = {
 
     /* --- PROJECTOR MODE --- */
     initProjectorMode() {
-        document.getElementById('game-container').innerHTML = `
-            <div class="game-content-outer" style="display:flex; justify-content:center; align-items:center; height:100%;">
-                <h1 style="color:white; font-size:3rem; animate: pulse 2s infinite;">Connected. Waiting for Host...</h1>
-            </div>
-        `;
+        document.title = "Game Projector";
+
+        // 1. Initial Waiting Screen
+        this.renderProjectorIdle();
+
+        // 2. Persistent Fullscreen Button (Floating)
+        const fsBtn = document.createElement('button');
+        fsBtn.className = 'btn btn-sm btn-outline';
+        fsBtn.innerHTML = '<i class="fas fa-expand"></i>';
+        fsBtn.style.position = 'fixed';
+        fsBtn.style.bottom = '20px';
+        fsBtn.style.right = '20px';
+        fsBtn.style.zIndex = '9999';
+        fsBtn.style.opacity = '0.5';
+        fsBtn.style.transition = 'opacity 0.3s';
+        fsBtn.onmouseover = () => fsBtn.style.opacity = '1';
+        fsBtn.onmouseout = () => fsBtn.style.opacity = '0.5';
+        fsBtn.onclick = () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(e => console.log(e));
+                fsBtn.innerHTML = '<i class="fas fa-compress"></i>';
+            } else {
+                document.exitFullscreen();
+                fsBtn.innerHTML = '<i class="fas fa-expand"></i>';
+            }
+        };
+        document.body.appendChild(fsBtn);
+
+        // Double-click to toggle fullscreen
+        document.body.addEventListener('dblclick', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(e => console.log(e));
+                fsBtn.innerHTML = '<i class="fas fa-compress"></i>';
+            } else {
+                document.exitFullscreen();
+                fsBtn.innerHTML = '<i class="fas fa-expand"></i>';
+            }
+        });
+
         // Request current state from Host
         setTimeout(() => {
             this.state.gameChannel.postMessage({ type: 'REQUEST_STATE' });
@@ -82,7 +116,35 @@ const gamesApp = {
 
     initHostMode() {
         this.renderSidebarList();
-        this.renderHome();
+
+        // AUTO-RESTORE STATE
+        if (!this.loadLocalState()) {
+            this.renderHome();
+        }
+    },
+
+    saveLocalState() {
+        const s = {
+            gameId: this.state.currentGame,
+            index: this.state.currentIndex
+        };
+        localStorage.setItem('mfg_state', JSON.stringify(s));
+    },
+
+    loadLocalState() {
+        try {
+            const raw = localStorage.getItem('mfg_state');
+            if (!raw) return false;
+            const s = JSON.parse(raw);
+            if (s && s.gameId && GAMES_DATA[s.gameId]) {
+                // Restore
+                this.loadGame(s.gameId, null, s.index); // Modified loadGame to accept index
+                return true;
+            }
+        } catch (e) {
+            console.error("Load State Error", e);
+        }
+        return false;
     },
 
     renderSidebarList() {
@@ -93,7 +155,7 @@ const gamesApp = {
         Object.keys(GAMES_DATA).forEach(key => {
             const game = GAMES_DATA[key];
             html += `
-                <div class="game-card" onclick="gamesApp.loadGame('${key}', this)">
+                <div class="game-card" id="card-${key}" onclick="gamesApp.loadGame('${key}', this)">
                     <div class="gc-icon"><i class="fas ${game.icon}"></i></div>
                     <div class="gc-details">
                         <h4>${game.title}</h4>
@@ -113,15 +175,23 @@ const gamesApp = {
         });
     },
 
-    loadGame(gameId, el = null) {
+    loadGame(gameId, el = null, forceIndex = 0) {
         if (!GAMES_DATA[gameId]) return;
 
         // UI Active State
         document.querySelectorAll('.game-card').forEach(c => c.classList.remove('active'));
+
+        // If el is null (auto-restore), try to find it
+        if (!el) el = document.getElementById(`card-${gameId}`);
         if (el) el.classList.add('active');
 
+        // Update State
         this.state.currentGame = gameId;
-        this.state.currentIndex = -1; // Title Screen
+        // Start at -1 for Title Screen unless forced
+        this.state.currentIndex = (forceIndex !== 0) ? forceIndex : -1;
+
+        // Save State
+        this.saveLocalState();
         this.state.gameState = {};
 
         // Update Header
@@ -136,6 +206,7 @@ const gamesApp = {
     },
 
     renderHome() {
+        localStorage.removeItem('mfg_state');
         this.state.currentGame = null;
         this.dom.header.classList.add('hidden');
         this.dom.controlsContainer.innerHTML = `
@@ -143,6 +214,9 @@ const gamesApp = {
                 <div class="icon-circle"><i class="fas fa-rocket"></i></div>
                 <h1>Ready to Launch</h1>
                 <p>Select a game to begin.</p>
+                <button class="btn btn-primary" onclick="gamesApp.openProjectorWindow()" style="margin-top:20px;">
+                    <i class="fas fa-external-link-alt"></i> Open Projector Window
+                </button>
             </div>
         `;
         document.getElementById('game-container').innerHTML = `
@@ -154,7 +228,7 @@ const gamesApp = {
         this.syncState('NAVIGATE_HOME');
     },
 
-    renderHostControls(gameId) {
+    renderHostControls(gameId = this.state.currentGame) {
         const game = GAMES_DATA[gameId];
         let html = '';
 
@@ -162,13 +236,13 @@ const gamesApp = {
         html += `
             <div class="control-deck">
                 <div class="deck-title">NAVIGATION</div>
-                <div class="nav-bar">
-                    <button class="btn btn-outline" onclick="gamesApp.prevItem()"><i class="fas fa-chevron-left"></i></button>
+                <div class="nav-bar" style="grid-column:1/-1">
+                    <button class="btn btn-outline" onclick="gamesApp.prevSlide()"><i class="fas fa-chevron-left"></i> Prev</button>
                     <div class="nav-status">
-                         <span class="val" id="ctrl-idx">${this.state.currentIndex === -1 ? 'TITLE' : this.state.currentIndex + 1}</span>
-                         <span class="lbl">OF ${game.content.length}</span>
+                         <span class="val">${this.state.currentIndex === -1 ? "TITLE" : (this.state.currentIndex + 1) + " / " + game.content.length}</span>
+                        <span class="lbl">Slide</span>
                     </div>
-                     <button class="btn btn-primary" onclick="gamesApp.nextItem()"><i class="fas fa-chevron-right"></i></button>
+                    <button class="btn btn-outline" onclick="gamesApp.nextSlide()">Next <i class="fas fa-chevron-right"></i></button>
                      <div style="width:1px; height:30px; background:var(--border-soft); margin:0 10px;"></div>
                      <button class="btn btn-warning" onclick="gamesApp.syncState('TOGGLE_RULES')" title="Show Rules"><i class="fas fa-info-circle"></i></button>
                 </div>
@@ -199,22 +273,22 @@ const gamesApp = {
             `;
         } else if (type === 'challenge_timer') {
             html += `
-                <button class="btn btn-xl btn-success" onclick="gamesApp.syncState('START_TIMER')">Start 30s</button>
-                <button class="btn btn-xl btn-outline-danger" onclick="gamesApp.syncState('RESET_TIMER')">Reset</button>
+                <button class="btn btn-xl btn-success" onclick="gamesApp.syncState('START_TIMER'); gamesApp.playSFX('30-Sec')">Start 30s</button>
+                <button class="btn btn-xl btn-outline-danger" onclick="gamesApp.syncState('RESET_TIMER'); gamesApp.stopAllSFX()">Reset</button>
             `;
         } else if (type === 'challenge_timer') {
             html += `
-                <button class="btn btn-xl btn-success" onclick="gamesApp.syncState('START_TIMER')">Start 30s</button>
-                <button class="btn btn-xl btn-outline-danger" onclick="gamesApp.syncState('RESET_TIMER')">Reset</button>
+                <button class="btn btn-xl btn-success" onclick="gamesApp.syncState('START_TIMER'); gamesApp.playSFX('30-Sec')">Start 30s</button>
+                <button class="btn btn-xl btn-outline-danger" onclick="gamesApp.syncState('RESET_TIMER'); gamesApp.stopAllSFX()">Reset</button>
             `;
         } else if (type === 'spin_wheel') {
             html += `
                 <button class="btn btn-xl btn-accent" style="grid-column:1/-1" onclick="gamesApp.syncState('SPIN_WHEEL')"><i class="fas fa-sync"></i> SPIN!</button>
             `;
-        } else if (type === 'word_chain') {
+        } else if (type === 'word_chain' || type === 'hot_seat') {
             html += `
                 <div class="empty-state" style="grid-column:1/-1; padding:20px;">
-                    <p>Use navigation to reveal the next word in the chain.</p>
+                    <p>Use navigation to reveal the next word.</p>
                 </div>
             `;
         } else if (type === 'image_display') {
@@ -245,21 +319,23 @@ const gamesApp = {
         this.dom.controlsContainer.innerHTML = html;
     },
 
-    nextItem() {
-        if (!this.state.currentGame) return;
+    nextSlide() {
         const game = GAMES_DATA[this.state.currentGame];
+        if (!game) return;
         if (this.state.currentIndex < game.content.length - 1) {
             this.state.currentIndex++;
-            this.updateIdxDisplay();
             this.syncState('LOAD_GAME');
+            this.renderHostControls(); // Re-render controls to update progress
+            this.saveLocalState();
         }
     },
 
-    prevItem() {
+    prevSlide() {
         if (this.state.currentIndex > -1) {
             this.state.currentIndex--;
-            this.updateIdxDisplay();
             this.syncState('LOAD_GAME');
+            this.renderHostControls();
+            this.saveLocalState();
         }
     },
 
@@ -387,6 +463,20 @@ const gamesApp = {
         });
     },
 
+
+    renderProjectorIdle() {
+        const container = document.getElementById('game-container');
+        if (container) {
+            container.innerHTML = `
+                <div class="game-content-outer" style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; gap:20px;">
+                    <img src="logo/logo.png" style="max-height:200px; margin-bottom:20px; animation: fadeIn 2s;">
+                    <h1 style="background: linear-gradient(135deg, #FFF 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size:5rem; font-weight:900; text-transform:uppercase; letter-spacing:2px; filter: drop-shadow(0 0 15px rgba(99,102,241,0.6)); margin-bottom: 0;">Hariprabodham Youth Assembly</h1>
+                    <div style="font-size:2rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:10px; border-top:1px solid rgba(255,255,255,0.2); padding-top:10px;">Satellite</div>
+                </div>
+            `;
+        }
+    },
+
     // --- SHARED RENDERER (Preview + Projector) ---
 
     renderGameContent(gameId, index) {
@@ -492,10 +582,10 @@ const gamesApp = {
                         <i class="fas fa-volume-up"></i>
                     </div>
                     <h2 style="font-size:2rem; opacity:0.7;">Listen Carefully...</h2>
-                    <div id="answer-box" class="answer-overlay hidden">
+                     <div id="answer-box" class="answer-overlay hidden">
                         <div class="answer-text">${item.answer}</div>
                     </div>
-                     <audio id="game-audio-player" src="${item.audio}"></audio>
+                     <!-- Audio handled by Howler.js now -->
                 </div>
             `;
         } else if (game.type === 'universal_timer') {
@@ -505,10 +595,17 @@ const gamesApp = {
                     <div id="timer-disp" class="timer-huge" style="font-size:12rem;">00:00</div>
                 </div>
             `;
+        } else if (game.type === 'hot_seat') {
+            html += `
+                <div style="display:flex; flex-direction:column; align-items:center; gap:20px;">
+                    <div style="font-size:2rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:4px;">THE WORD IS</div>
+                    <div class="game-txt-huge" style="font-size: 9rem; color: var(--accent); margin:0;">${item.start_word}</div>
+                </div>
+            `;
         } // End 
 
 
-        html += `</div>`; // Close outer
+        html += `</div > `; // Close outer
         container.innerHTML = html;
 
         // Restore State if any
@@ -520,48 +617,52 @@ const gamesApp = {
 
     // --- LOGIC: AUDIO & TIMERS ---
 
-    audio: { bgm: null, sfx: {} },
+
+    audio: { bgm: null, sfx: {}, current: null },
     initAudio() {
         if (this.audio.bgm) return;
 
-        // Stable BGM (Kevin MacLeod - Pixelland), MP3 format for wider compatibility
-        this.audio.bgm = new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c4/Kevin_MacLeod_-_Pixelland.ogg/Kevin_MacLeod_-_Pixelland.ogg.mp3');
-        this.audio.bgm.loop = true;
-        this.audio.bgm.volume = 0.3;
-
-        // Base64 SFX for Reliability
-        const sfxData = {
-            correct: 'data:audio/mp3;base64,//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq', // Simplified Placeholder (Real Base64 would be too long for this snippet, revert to functional URL below)
-        };
-        // Since Base64 is too large for this context without a massive paste, 
-        // I will use highly reliable standard COMMONS URLs or simple audio generation if possible.
-        // Let's use reliable Wikimedia/Archive.org direct links.
+        // Local BGM
+        this.audio.bgm = new Howl({
+            src: ['audio/bgm.mp3'],
+            loop: true,
+            volume: 0.3,
+            html5: true, // Use HTML5 Audio for larger files like BGM
+            onplay: () => {
+                // Start sync interval
+                requestAnimationFrame(this.stepBGM.bind(this));
+            },
+            onload: () => {
+                // Set Duration
+                const dur = this.audio.bgm.duration();
+                const el = document.getElementById('bgm-total');
+                const seek = document.getElementById('bgm-seek');
+                if (el) el.innerText = this.fmtTime(dur);
+                if (seek) seek.max = dur;
+            },
+            onplayerror: function () {
+                this.audio.bgm.once('unlock', function () {
+                    this.audio.bgm.play();
+                });
+            }
+        });
 
         const sfxUrls = {
-            // Correct: Ding
-            correct: 'https://upload.wikimedia.org/wikipedia/commons/3/34/Sound_Effect_-_Positive_Correct_Answer.ogg',
-            // Wrong: Buzzer (Fixed)
-            wrong: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Buzz-error.ogg',
-            // Applause
-            applause: 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Applause_-_sound_effect.ogg',
-            // Drumroll
-            drumroll: 'https://upload.wikimedia.org/wikipedia/commons/e/e0/Drum_roll.ogg',
-            // Laugh
-            laugh: 'https://upload.wikimedia.org/wikipedia/commons/f/fd/Crowd_Laugh.ogg',
-            // Boo
-            boo: 'https://upload.wikimedia.org/wikipedia/commons/3/3b/Crowd_Boo.ogg',
-            // Airhorn (Replica)
-            airhorn: 'https://upload.wikimedia.org/wikipedia/commons/9/9b/Air_Horn.ogg',
-            // Fanfare
-            fanfare: 'https://upload.wikimedia.org/wikipedia/commons/3/38/Fanfare_sound_effect.ogg'
+            correct: 'audio/correct.mp3',
+            wrong: 'audio/wrong.mp3',
+            applause: 'audio/applause.mp3',
+            drumroll: 'audio/drumroll.mp3',
+            laugh: 'audio/laugh.mp3',
+            boo: 'audio/boo.mp3',
+            airhorn: 'audio/air-horn.mp3',
+            fanfare: 'audio/fanfare.mp3',
+            '30-Sec': 'audio/30-sec.mp3',
+            '60-Sec': 'audio/60-sec.mp3'
         };
 
-        // Fallback for Wrong/Buzzer if Wikimedia link is weird:
-        sfxUrls.wrong = 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Buzz-error.ogg'; // Better one
 
         for (let k in sfxUrls) {
-            this.audio.sfx[k] = new Audio(sfxUrls[k]);
-            this.audio.sfx[k].preload = 'auto'; // Force load
+            this.audio.sfx[k] = new Howl({ src: [sfxUrls[k]] });
         }
     },
 
@@ -569,31 +670,61 @@ const gamesApp = {
         this.initAudio(); // Ensure init
         const btn = document.getElementById('bgm-btn');
 
-        if (this.audio.bgm.paused) {
-            this.audio.bgm.play().catch(e => console.error("BGM Play Error:", e));
-            btn.classList.add('active');
-            btn.innerHTML = '<i class="fas fa-pause"></i> Stop BGM';
-        } else {
+        if (!this.audio.bgm) return;
+
+        if (this.audio.bgm.playing()) {
             this.audio.bgm.pause();
-            btn.classList.remove('active');
-            btn.innerHTML = '<i class="fas fa-music"></i> Start BGM';
+            if (btn) {
+                btn.classList.remove('active');
+                btn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        } else {
+            this.audio.bgm.play();
+            if (btn) {
+                btn.classList.add('active');
+                btn.innerHTML = '<i class="fas fa-pause"></i>';
+            }
+        }
+    },
+
+    stepBGM() {
+        if (!this.audio.bgm || !this.audio.bgm.playing()) return;
+
+        const seek = this.audio.bgm.seek() || 0;
+        document.getElementById('bgm-current').innerText = this.fmtTime(seek);
+        document.getElementById('bgm-seek').value = seek;
+
+        if (this.audio.bgm.playing()) {
+            requestAnimationFrame(this.stepBGM.bind(this));
+        }
+    },
+
+    seekBGM(val) {
+        if (this.audio.bgm) {
+            this.audio.bgm.seek(val);
         }
     },
 
     setBGMVolume(val) {
-        if (this.audio.bgm) this.audio.bgm.volume = val;
+        if (this.audio.bgm) this.audio.bgm.volume(val);
     },
 
     playSFX(key) {
         if (!this.audio.bgm) this.initAudio(); // ensure init
         // Duck BGM
-        if (this.audio.bgm && !this.audio.bgm.paused) this.audio.bgm.volume = 0.1;
+        if (this.audio.bgm && this.audio.bgm.playing()) this.audio.bgm.volume(0.1);
 
         const s = this.audio.sfx[key];
         if (s) {
-            s.currentTime = 0;
+            s.stop();
             s.play();
-            s.onended = () => { if (this.audio.bgm) this.audio.bgm.volume = document.querySelector('.dock-slider').value; };
+            s.on('end', () => { if (this.audio.bgm) this.audio.bgm.volume(document.querySelector('.dock-slider').value); });
+        }
+    },
+
+    stopAllSFX() {
+        for (let k in this.audio.sfx) {
+            if (this.audio.sfx[k]) this.audio.sfx[k].stop();
         }
     },
 
@@ -610,7 +741,7 @@ const gamesApp = {
     handleProjectorMessage(data) {
         switch (data.type) {
             case 'NAVIGATE_HOME':
-                document.getElementById('game-container').innerHTML = `<div class="game-content-outer"><h1 style="color:var(--text-muted)">WAITING...</h1></div>`;
+                this.renderProjectorIdle();
                 break;
             case 'LOAD_GAME':
                 this.renderGameContent(data.gameId, data.index);
@@ -652,7 +783,7 @@ const gamesApp = {
                         const s = sec % 60;
                         // If it's the challenge timer (usually just 30s), existing behavior just showed seconds if <60?
                         // The existing code just showed 't'. Let's be smart.
-                        if (sec > 59) return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                        if (sec > 59) return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')} `;
                         return sec;
                     };
 
@@ -681,12 +812,12 @@ const gamesApp = {
                     overlay.id = 'rules-overlay';
                     overlay.className = 'rules-modal fade-in';
                     overlay.innerHTML = `
-                        <div class="rules-content">
-                            <h1><i class="fas fa-book"></i> HOW TO PLAY</h1>
-                            <h2>${game.title}</h2>
-                            <ul>${rulesList.map(r => `<li>${r}</li>`).join('')}</ul>
-                        </div>
-                    `;
+                    <div class="rules-content">
+                        <h1><i class="fas fa-book"></i> HOW TO PLAY</h1>
+                        <h2>${game.title}</h2>
+                        <ul>${rulesList.map(r => `<li>${r}</li>`).join('')}</ul>
+                    </div>
+                `;
                     document.getElementById('game-container').appendChild(overlay);
                 }
                 break;
@@ -737,11 +868,28 @@ const gamesApp = {
                 }
                 break;
             case 'PLAY_AUDIO':
-                const audioEl = document.getElementById('game-audio-player');
-                if (audioEl) {
-                    if (audioEl.src && !audioEl.src.endsWith('undefined')) {
-                        audioEl.play().catch(e => console.error(e));
-                    }
+                const game = GAMES_DATA[this.state.currentGame];
+                const item = game.content[this.state.currentIndex];
+                if (item && item.audio) {
+                    // Stop previous if any
+                    if (this.audio.current) this.audio.current.stop();
+
+                    this.audio.current = new Howl({
+                        src: [item.audio],
+                        html5: true, // Force HTML5 Audio to allow streaming large files/local files if needed
+                        onloaderror: (id, err) => {
+                            console.error("Audio Load Error", err);
+                            alert("Error loading audio: " + item.audio);
+                        },
+                        onplayerror: (id, err) => {
+                            console.error("Audio Play Error", err);
+                            this.audio.current.once('unlock', () => {
+                                this.audio.current.play();
+                            });
+                        }
+                    });
+                    this.audio.current.play();
+
                     const viz = document.getElementById('audio-visualizer');
                     if (viz) {
                         viz.style.transform = 'scale(1.2)';
@@ -817,8 +965,9 @@ const gamesApp = {
     },
 
     fmtTime(sec) {
+        if (!sec || isNaN(sec)) return "00:00";
         const m = Math.floor(sec / 60);
-        const s = sec % 60;
+        const s = Math.floor(sec % 60);
         return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
 };

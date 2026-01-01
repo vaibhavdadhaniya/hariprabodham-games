@@ -107,21 +107,21 @@ const GAMES_DATA = {
         type: "audio_play",
         rules: ["Listen to the sound.", "Identify what makes it.", "Keep quiet while listening!"],
         content: [
-            { audio: "", answer: "Elephant" },
-            { audio: "", answer: "Car Horn" },
-            { audio: "", answer: "Doorbell" },
-            { audio: "", answer: "Cat Meow" },
-            { audio: "", answer: "Dog Bark" },
-            { audio: "", answer: "Glass Breaking" },
-            { audio: "", answer: "Thunder" },
-            { audio: "", answer: "Rain" },
-            { audio: "", answer: "Train" },
-            { audio: "", answer: "Keyboard Typing" },
-            { audio: "", answer: "Sneeze" },
-            { audio: "", answer: "Laugh" },
-            { audio: "", answer: "Applause" },
-            { audio: "", answer: "Clock Ticking" },
-            { audio: "", answer: "Phone Ring" }
+            { audio: "audio/elephant.mp3", answer: "Elephant" },
+            { audio: "audio/car-horn.mp3", answer: "Car Horn" },
+            { audio: "audio/doorbell.mp3", answer: "Doorbell" },
+            { audio: "audio/cat-meow.mp3", answer: "Cat Meow" },
+            { audio: "audio/dog-bark.mp3", answer: "Dog Bark" },
+            { audio: "audio/glass-breaking.mp3", answer: "Glass Breaking" },
+            { audio: "audio/thunder.mp3", answer: "Thunder" },
+            { audio: "audio/rain.mp3", answer: "Rain" },
+            { audio: "audio/train.mp3", answer: "Train" },
+            { audio: "audio/keyboard-typing.mp3", answer: "Keyboard Typing" },
+            { audio: "audio/sneeze.mp3", answer: "Sneeze" },
+            { audio: "audio/laugh.mp3", answer: "Laugh" },
+            { audio: "audio/applause.mp3", answer: "Applause" },
+            { audio: "audio/clock-ticking.mp3", answer: "Clock Ticking" },
+            { audio: "audio/phone-ring.mp3", answer: "Phone Ring" }
         ]
     },
     finish_sentence: {
@@ -209,22 +209,22 @@ const GAMES_DATA = {
             { challenge: "Name 5 Vegetables" },
             { challenge: "Name 5 Brands" },
             { challenge: "Say alphabet backwards Z-T" },
-            { challenge: "Name 7 things you find in a kitchen" },
+            // { challenge: "Name 7 things you find in a kitchen" },
             { challenge: "Act like an animal – team must guess" },
             { challenge: "Name 5 apps on your phone (no looking!)" },
             { challenge: "Name 5 things that are round" },
-            { challenge: "Do a slow-motion replay of a goal celebration" },
+            // { challenge: "Do a slow-motion replay of a goal celebration" },
             { challenge: "Name 4 festivals celebrated in India" },
             { challenge: "Say 5 English words without using vowels" },
             { challenge: "Balance on one foot and count till 15" },
-            { challenge: "Name 3 superheroes and their powers" },
+            // { challenge: "Name 3 superheroes and their powers" },
             { challenge: "Make a funny face without laughing" },
             { challenge: "Name 5 things you carry daily" },
             { challenge: "Name 3 things you see in the sky" },
             { challenge: "Pretend you're a news reporter – say one headline" },
             { challenge: "Name 5 emotions without repeating tone" },
             { challenge: "Say your name backwards letter by letter" },
-            { challenge: "Point out 3 red-colored things around you" }
+            // { challenge: "Point out 3 red-colored things around you" }
 
         ]
     },
@@ -248,5 +248,98 @@ const GAMES_DATA = {
         type: "universal_timer",
         rules: ["Set the time.", "Wait for the countdown.", "Focus on your task."],
         content: [{}]
+    },
+    hot_seat: {
+        title: "Hot Seat",
+        icon: "fa-chair",
+        description: "Guess without seeing.",
+        type: "hot_seat",
+        rules: ["One person sits back to screen.", "Audience gives clues.", "No saying the word itself!"],
+        content: [
+            { start_word: "Beyoncé" },
+            { start_word: "Harry Potter" },
+            { start_word: "Spiderman" },
+            { start_word: "Pizza" },
+            { start_word: "Smartphone" },
+            { start_word: "Teacher" },
+            { start_word: "Dinosaur" },
+            { start_word: "Toothbrush" },
+            { start_word: "Statue of Liberty" },
+            { start_word: "Mickey Mouse" }
+        ]
+    },
+    emoji_puzzles: {
+        title: "Emoji Puzzles",
+        icon: "fa-icons",
+        description: "Guess the Movie/Song.",
+        type: "reveal_answer",
+        rules: ["Look at the Emojis.", "Guess the Movie or Song.", "Shout it out!"],
+        content: [
+            { question: "🦁 👑 (Movie)", answer: "The Lion King" },
+            { question: "❄️ 👸 (Movie)", answer: "Frozen" },
+            { question: "👻 🚫 (Movie)", answer: "Ghostbusters" },
+            { question: "🚢 🧊 (Movie)", answer: "Titanic" },
+            { question: "🕷️ 👨 (Movie)", answer: "Spiderman" },
+            { question: "👁️ 🐅 (Song)", answer: "Eye of the Tiger" },
+            { question: "💍 💍 💍 (Song)", answer: "Single Ladies" },
+            { question: "👶 🦈 (Song)", answer: "Baby Shark" },
+            { question: "☂️ (Song)", answer: "Umbrella" },
+            { question: "🚀 👨 (Song)", answer: "Rocket Man" }
+        ]
+    },
+    debate_duel: {
+        title: "Debate Duel",
+        icon: "fa-gavel",
+        description: "Choose your side!",
+        type: "reveal_answer",
+        rules: ["Two volunteers.", "30 seconds to argue.", "Audience votes with noise!"],
+        content: [
+            { question: "Cats vs Dogs", answer: "Who won?" },
+            { question: "Summer vs Winter", answer: "Who won?" },
+            { question: "Pineapple on Pizza: Yes or No?", answer: "Who won?" },
+            { question: "Marvel vs DC", answer: "Who won?" },
+            { question: "Morning Person vs Night Owl", answer: "Who won?" },
+            { question: "Coffee vs Tea", answer: "Who won?" },
+            { question: "Instagram vs TikTok", answer: "Who won?" },
+            { question: "Video Games vs Sports", answer: "Who won?" },
+            { question: "Texting vs Calling", answer: "Who won?" },
+            { question: "Money vs Fame", answer: "Who won?" }
+        ]
+    },
+    whats_missing: {
+        title: "Memory Chaos",
+        icon: "fa-brain",
+        description: "Memorize and Spot the change.",
+        type: "reveal_answer",
+        rules: ["Memorize the list.", "Tell what is missing in next slide.", "Focus!"],
+        content: [
+            { question: "LEVEL 1: Apple, Banana, Orange, Grape", answer: "Memorize..." },
+            { question: "Apple, Orange, Grape", answer: "Missing: Banana" },
+            { question: "LEVEL 2: Red, Blue, Green, Yellow, Pink", answer: "Memorize..." },
+            { question: "Red, Blue, Yellow, Pink", answer: "Missing: Green" },
+            { question: "LEVEL 3: Cat, Dog, Bird, Fish, Hamster, Turtle", answer: "Memorize..." },
+            { question: "Cat, Dog, Bird, Hamster, Turtle", answer: "Missing: Fish" },
+            { question: "LEVEL 4: Car, Bus, Train, Plane, Boat, Bike, Truck", answer: "Memorize..." },
+            { question: "Car, Bus, Train, Plane, Boat, Truck", answer: "Missing: Bike" }
+        ]
+    },
+    never_have_i_ever: {
+        title: "Never Have I Ever",
+        icon: "fa-beer",
+        description: "Stand up if you did it.",
+        type: "text_complete",
+        rules: ["If you have done it, Sit Down.", "Last person standing wins.", "Be honest!"],
+        content: [
+            { sentence: "Never have I ever ____", clues: [], answer: "Broken a bone" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Traveled Solo" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Gotten a speeding ticket" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Sung Karaoke" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Eaten Sushi" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Been on TV" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Met a Celebrity" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Stayed up all night" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Fainted in public" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Lied about my age" }
+        ]
     }
 };

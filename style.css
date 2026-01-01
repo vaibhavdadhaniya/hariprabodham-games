@@ -919,3 +919,50 @@ body.mode-projector .emoji-reveal {
         transform: scale(1);
     }
 }
+
+/* Audio Player */
+.bgm-player-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 5px 10px;
+    border-radius: 8px;
+    margin-right: 15px;
+}
+
+.mini-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+}
+
+.time-lbl {
+    font-size: 0.8rem;
+    font-family: monospace;
+    opacity: 0.7;
+    min-width: 40px;
+    text-align: center;
+}
+
+.seek-slider {
+    -webkit-appearance: none;
+    width: 150px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    outline: none;
+}
+
+.seek-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+}
