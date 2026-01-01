@@ -1,0 +1,362 @@
+export interface SlideContent {
+    image?: string;
+    answer?: string;
+    word?: string;
+    category?: string;
+    clues?: string[];
+    question?: string;
+    puzzle?: string;
+    audio?: string;
+    sentence?: string;
+    start_word?: string;
+    outcomes?: string[];
+    challenge?: string;
+}
+
+export interface Game {
+    title: string;
+    icon: string;
+    description: string;
+    type: string;
+    rules: string[];
+    content: SlideContent[];
+}
+
+export const GAMES_DATA: Record<string, Game> = {
+    guess_mood: {
+        title: "Guess the Mood",
+        icon: "fa-theater-masks",
+        description: "Reveal the blurred emoji/image.",
+        type: "slider_reveal",
+        rules: ["Only a small part is revealed.", "Guess the mood/emoji.", "Shout out your answer!"],
+        content: [
+            { image: "😊", answer: "Happy" },
+            { image: "😡", answer: "Angry" },
+            { image: "🤔", answer: "Thinking" },
+            { image: "🤣", answer: "Laughing" },
+            { image: "😢", answer: "Sad" },
+            { image: "😎", answer: "Cool" },
+            { image: "😴", answer: "Sleepy" },
+            { image: "😱", answer: "Shocked" },
+            { image: "🥳", answer: "Party" },
+            { image: "🤯", answer: "Mind Blown" },
+            { image: "🤡", answer: "Clown" },
+            { image: "👻", answer: "Ghost" },
+            { image: "👽", answer: "Alien" },
+            { image: "🤖", answer: "Robot" },
+            { image: "🤐", answer: "Zip It" },
+            { image: "🤠", answer: "Cowboy" },
+            { image: "😇", answer: "Angel" },
+            { image: "🤒", answer: "Sick" },
+            { image: "🤥", answer: "Liar" },
+            { image: "🧐", answer: "Investigator" }
+        ]
+    },
+    guess_word: {
+        title: "Guess the Word",
+        icon: "fa-puzzle-piece",
+        description: "Clues reveal the hidden word.",
+        type: "timed_clues",
+        rules: ["You will see a Category.", "Clues will appear one by one.", "Guess the word before time runs out!", "Shout your answer!"],
+        content: [
+            { word: "Unity", category: "Concept", clues: ["Spiritual", "Components", "Togetherness"] },
+            { word: "Music", category: "Art", clues: ["Sound", "Earphones", "Beat"] },
+            { word: "Future", category: "Time", clues: ["Time", "Tomorrow", "Hope"] },
+            { word: "History", category: "Subject", clues: ["Past", "School Subject", "Dates"] },
+            { word: "Water", category: "Element", clues: ["Liquid", "Ocean", "Drink"] },
+            { word: "Fire", category: "Element", clues: ["Hot", "Red", "Camp"] },
+            { word: "Earth", category: "Planet", clues: ["Planet", "Soil", "Ground"] },
+            { word: "Air", category: "Element", clues: ["Breath", "Wind", "Invisible"] },
+            { word: "Space", category: "Place", clues: ["Stars", "Void", "NASA"] },
+            { word: "Light", category: "Physics", clues: ["Sun", "Bright", "Lamp"] },
+            { word: "Shadow", category: "Nature", clues: ["Dark", "Follows You", "Night"] },
+            { word: "Mirror", category: "Object", clues: ["Reflect", "Glass", "Look"] },
+            { word: "Camera", category: "Device", clues: ["Photo", "Lens", "Click"] },
+            { word: "Phone", category: "Device", clues: ["Call", "App", "Mobile"] },
+            { word: "Book", category: "Object", clues: ["Read", "Pages", "Story"] }
+        ]
+    },
+    riddle_challenge: {
+        title: "Riddle Challenge",
+        icon: "fa-question-circle",
+        description: "Solve the brain teaser.",
+        type: "reveal_answer",
+        rules: ["Read the riddle carefully.", "Think outside the box.", "Raise your hand to answer."],
+        content: [
+            { question: "What comes down but never goes up?", answer: "Rain" },
+            { question: "I hove branches, but no fruit, trunk or leaves.", answer: "A Bank" },
+            { question: "What can you catch, but not throw?", answer: "A Cold" },
+            { question: "What begins with T, ends with T, and has T in it?", answer: "Teapot" },
+            { question: "What has legs, but doesn't walk?", answer: "A Table" },
+            { question: "What kind of band never plays music?", answer: "A Rubber Band" },
+            { question: "What has many teeth, but can't bite?", answer: "A Comb" },
+            { question: "What is cut on a table, but never eaten?", answer: "A Deck of Cards" },
+            { question: "What has words, but never speaks?", answer: "A Book" },
+            { question: "What goes round the wood but never goes into the wood?", answer: "Bark" },
+            { question: "I'm tall when I'm young, short when I'm old.", answer: "Candle" },
+            { question: "What is full of holes but still holds water?", answer: "Sponge" },
+            { question: "What gets wet while drying?", answer: "Towel" },
+            { question: "I shave every day, but my beard stays the same.", answer: "Barber" },
+            { question: "What can you break, even if you never pick it up?", answer: "Promise" }
+        ]
+    },
+    meme_caption: {
+        title: "Meme Caption",
+        icon: "fa-laugh-squint",
+        description: "Caption the image live!",
+        type: "image_display",
+        rules: ["Look at the funny image.", "Think of a funny caption.", "Best caption wins!"],
+        content: [
+            { image: "https://i.imgflip.com/1g8my4.jpg" },
+            { image: "https://i.imgflip.com/26am.jpg" },
+            { image: "https://i.imgflip.com/1jwhww.jpg" },
+            { image: "https://i.imgflip.com/30b1gx.jpg" },
+            { image: "https://i.imgflip.com/261o3j.jpg" },
+            { image: "https://i.imgflip.com/9ehk.jpg" },
+            { image: "https://i.imgflip.com/1ur9b0.jpg" },
+            { image: "https://i.imgflip.com/28j0te.jpg" },
+            { image: "https://i.imgflip.com/1otk96.jpg" },
+            { image: "https://i.imgflip.com/2Yb55.jpg" },
+            { image: "https://i.imgflip.com/39t1o.jpg" },
+            { image: "https://i.imgflip.com/1bhw.jpg" },
+            { image: "https://i.imgflip.com/1b424.jpg" },
+            { image: "https://i.imgflip.com/1c1uej.jpg" },
+            { image: "https://i.imgflip.com/1tl71a.jpg" }
+        ]
+    },
+    guess_sound: {
+        title: "Guess the Sound",
+        icon: "fa-headphones",
+        description: "Listen and identify.",
+        type: "audio_play",
+        rules: ["Listen to the sound.", "Identify what makes it.", "Keep quiet while listening!"],
+        content: [
+            { audio: "audio/elephant.mp3", answer: "Elephant" },
+            { audio: "audio/car-horn.mp3", answer: "Car Horn" },
+            { audio: "audio/doorbell.mp3", answer: "Doorbell" },
+            { audio: "audio/cat-meow.mp3", answer: "Cat Meow" },
+            { audio: "audio/dog-bark.mp3", answer: "Dog Bark" },
+            { audio: "audio/glass-breaking.mp3", answer: "Glass Breaking" },
+            { audio: "audio/thunder.mp3", answer: "Thunder" },
+            { audio: "audio/rain.mp3", answer: "Rain" },
+            { audio: "audio/train.mp3", answer: "Train" },
+            { audio: "audio/keyboard-typing.mp3", answer: "Keyboard Typing" },
+            { audio: "audio/sneeze.mp3", answer: "Sneeze" },
+            { audio: "audio/laugh.mp3", answer: "Laugh" },
+            { audio: "audio/applause.mp3", answer: "Applause" },
+            { audio: "audio/clock-ticking.mp3", answer: "Clock Ticking" },
+            { audio: "audio/phone-ring.mp3", answer: "Phone Ring" }
+        ]
+    },
+    finish_sentence: {
+        title: "Finish the Sentence",
+        icon: "fa-pencil-alt",
+        description: "Complete the phrase.",
+        type: "text_complete",
+        rules: ["Read the incomplete sentence.", "Fill in the blank.", "Make it creative or funny!"],
+        content: [
+            { sentence: "If I could fly, I would ____", clues: ["Travel", "Moon", "Cloud"], answer: "Travel the World" },
+            { sentence: "My favorite food is ____", clues: ["Pizza", "Burger", "Salad"], answer: "Pizza" },
+            { sentence: "I am scared of ____", clues: ["Spiders", "Dark", "Ghosts"], answer: "Spiders" },
+            { sentence: "The best superhero is ____", clues: ["Superman", "Batman", "Mom"], answer: "Batman" },
+            { sentence: "School is ____", clues: ["Fun", "Boring", "Long"], answer: "Cool" },
+            { sentence: "I want to be a ____", clues: ["Doctor", "Pilot", "Artist"], answer: "Youtuber" },
+            { sentence: "Happiness is ____", clues: ["Love", "Peace", "Friends"], answer: "Spending Money" },
+            { sentence: "Money cannot buy ____", clues: ["Love", "Time", "Health"], answer: "Happiness" },
+            { sentence: "Never EVER ____", clues: ["Give Up", "Lie", "Cheat"], answer: "Give Up" },
+            { sentence: "Success takes ____", clues: ["Hard Work", "Patience", "Time"], answer: "Hard Work" },
+            { sentence: "Life is like a ____", clues: ["Box of Chocolates", "Rollercoaster"], answer: "Box of Chocolates" },
+            { sentence: "I love to ____", clues: ["Sing", "Dance", "Sleep"], answer: "Sleep" },
+            { sentence: "My hidden talent is ____", clues: ["Magic", "Drawing", "Singing"], answer: "Being Awesome" },
+            { sentence: "A good friend is ____", clues: ["Loyal", "Kind", "Honest"], answer: "Always There" },
+            { sentence: "Tomorrow will be ____", clues: ["Better", "Sunny", "Awesome"], answer: "The Best Day" }
+        ]
+    },
+    puzzle_board: {
+        title: "Logical Puzzle Board",
+        icon: "fa-shapes",
+        description: "Patterns and Logic.",
+        type: "reveal_answer",
+        rules: ["Analyze the pattern.", "Find the missing piece/number.", "Explain your logic."],
+        content: [
+            { puzzle: "2, 4, 8, 16, ?", answer: "32" },
+            { puzzle: "O, T, T, F, F, ?", answer: "S (Six)" },
+            { puzzle: "M, T, W, T, ?", answer: "F (Friday)" },
+            { puzzle: "1, 1, 2, 3, 5, ?", answer: "8" },
+            { puzzle: "A, Z, B, Y, ?", answer: "C" },
+            { puzzle: "Red, Orange, Yellow, Green, ?", answer: "Blue" },
+            { puzzle: "Square has 4, Triangle has 3, Line has ?", answer: "1" },
+            { puzzle: "9, 18, 27, 36, ?", answer: "45 (x9)" },
+            { puzzle: "100, 90, 80, 70, ?", answer: "60" },
+            { puzzle: "J, F, M, A, M, ?", answer: "J (June)" },
+            { puzzle: "12, 1, 1, 1, 2, 1, ?", answer: "3 (Strokes)" },
+            { puzzle: "S, M, T, W, ?", answer: "T (Thursday)" },
+            { puzzle: "10, 11, 12, 13, 14, 15, 16, 17, 18, 19, ?", answer: "20" },
+            { puzzle: "What is 1/2 of 2/3 of 3/4 of 4/5 of 5/6 of 6/7 of 7/8 of 8/9 of 9/10 of 100?", answer: "10" },
+            { puzzle: "Odd one out: Car, Bus, Train, Helicopter", answer: "Helicopter (Air)" }
+        ]
+    },
+    word_chain: {
+        title: "Word Chain",
+        icon: "fa-link",
+        description: "Start a chain reaction.",
+        type: "word_chain",
+        rules: ["See the starting word.", "Say the next word associated with it.", "Keep the chain going fast!"],
+        content: [
+            { start_word: "YOUTH" },
+            { start_word: "ASSEMBLY" },
+            { start_word: "ENERGY" },
+            { start_word: "POWER" },
+            { start_word: "FUTURE" },
+            { start_word: "LEADER" },
+            { start_word: "CREATE" },
+            { start_word: "INSPIRE" },
+            { start_word: "BUILD" },
+            { start_word: "DREAM" },
+            { start_word: "ACTION" },
+            { start_word: "TEAM" },
+            { start_word: "UNITY" },
+            { start_word: "PEACE" },
+            { start_word: "JOY" }
+        ]
+    },
+    challenge_timer: {
+        title: "30-Second Challenge",
+        icon: "fa-stopwatch",
+        description: "Quick fire tasks.",
+        type: "challenge_timer",
+        rules: ["Read the challenge.", "You have 30 seconds.", "Complete it before the buzzer!"],
+        content: [
+            { challenge: "Stand on one leg" },
+            { challenge: "Don't blink!" },
+            { challenge: "Name 3 Countries in Asia" },
+            { challenge: "Name 5 Vegetables" },
+            { challenge: "Name 5 Brands" },
+            { challenge: "Say alphabet backwards Z-T" },
+            { challenge: "Act like an animal – team must guess" },
+            { challenge: "Name 5 apps on your phone (no looking!)" },
+            { challenge: "Name 5 things that are round" },
+            { challenge: "Name 4 festivals celebrated in India" },
+            { challenge: "Say 5 English words without using vowels" },
+            { challenge: "Balance on one foot and count till 15" },
+            { challenge: "Make a funny face without laughing" },
+            { challenge: "Name 5 things you carry daily" },
+            { challenge: "Name 3 things you see in the sky" },
+            { challenge: "Pretend you're a news reporter – say one headline" },
+            { challenge: "Name 5 emotions without repeating tone" },
+            { challenge: "Say your name backwards letter by letter" }
+        ]
+    },
+    random_wheel: {
+        title: "Random Wheel",
+        icon: "fa-spinner",
+        description: "Spin for a result.",
+        type: "spin_wheel",
+        rules: ["Spin the wheel.", "Perform the action or take the team.", "No re-spins!"],
+        content: [
+            { outcomes: ["Team A", "Team B", "Team C", "Team D"] },
+            { outcomes: ["Sing", "Dance", "Joke", "Story"] }
+        ]
+    },
+    universal_timer: {
+        title: "Universal Timer",
+        icon: "fa-clock",
+        description: "Countdown.",
+        type: "universal_timer",
+        rules: ["Set the time.", "Wait for the countdown.", "Focus on your task."],
+        content: [{}]
+    },
+    hot_seat: {
+        title: "Hot Seat",
+        icon: "fa-chair",
+        description: "Guess without seeing.",
+        type: "hot_seat",
+        rules: ["One person sits back to screen.", "Audience gives clues.", "No saying the word itself!"],
+        content: [
+            { start_word: "Beyoncé" },
+            { start_word: "Harry Potter" },
+            { start_word: "Spiderman" },
+            { start_word: "Pizza" },
+            { start_word: "Smartphone" },
+            { start_word: "Teacher" },
+            { start_word: "Dinosaur" },
+            { start_word: "Toothbrush" },
+            { start_word: "Statue of Liberty" },
+            { start_word: "Mickey Mouse" }
+        ]
+    },
+    emoji_puzzles: {
+        title: "Emoji Puzzles",
+        icon: "fa-icons",
+        description: "Guess the Movie/Song.",
+        type: "reveal_answer",
+        rules: ["Look at the Emojis.", "Guess the Movie or Song.", "Shout it out!"],
+        content: [
+            { question: "🦁 👑 (Movie)", answer: "The Lion King" },
+            { question: "❄️ 👸 (Movie)", answer: "Frozen" },
+            { question: "👻 🚫 (Movie)", answer: "Ghostbusters" },
+            { question: "🚢 🧊 (Movie)", answer: "Titanic" },
+            { question: "🕷️ 👨 (Movie)", answer: "Spiderman" },
+            { question: "👁️ 🐅 (Song)", answer: "Eye of the Tiger" },
+            { question: "💍 💍 💍 (Song)", answer: "Single Ladies" },
+            { question: "👶 🦈 (Song)", answer: "Baby Shark" },
+            { question: "☂️ (Song)", answer: "Umbrella" },
+            { question: "🚀 👨 (Song)", answer: "Rocket Man" }
+        ]
+    },
+    debate_duel: {
+        title: "Debate Duel",
+        icon: "fa-gavel",
+        description: "Choose your side!",
+        type: "reveal_answer",
+        rules: ["Two volunteers.", "30 seconds to argue.", "Audience votes with noise!"],
+        content: [
+            { question: "Cats vs Dogs", answer: "Who won?" },
+            { question: "Summer vs Winter", answer: "Who won?" },
+            { question: "Pineapple on Pizza: Yes or No?", answer: "Who won?" },
+            { question: "Marvel vs DC", answer: "Who won?" },
+            { question: "Morning Person vs Night Owl", answer: "Who won?" },
+            { question: "Coffee vs Tea", answer: "Who won?" },
+            { question: "Instagram vs TikTok", answer: "Who won?" },
+            { question: "Video Games vs Sports", answer: "Who won?" },
+            { question: "Texting vs Calling", answer: "Who won?" },
+            { question: "Money vs Fame", answer: "Who won?" }
+        ]
+    },
+    whats_missing: {
+        title: "Memory Chaos",
+        icon: "fa-brain",
+        description: "Memorize and Spot the change.",
+        type: "reveal_answer",
+        rules: ["Memorize the list.", "Tell what is missing in next slide.", "Focus!"],
+        content: [
+            { question: "LEVEL 1: Apple, Banana, Orange, Grape", answer: "Memorize..." },
+            { question: "Apple, Orange, Grape", answer: "Missing: Banana" },
+            { question: "LEVEL 2: Red, Blue, Green, Yellow, Pink", answer: "Memorize..." },
+            { question: "Red, Blue, Yellow, Pink", answer: "Missing: Green" },
+            { question: "LEVEL 3: Cat, Dog, Bird, Fish, Hamster, Turtle", answer: "Memorize..." },
+            { question: "Cat, Dog, Bird, Hamster, Turtle", answer: "Missing: Fish" },
+            { question: "LEVEL 4: Car, Bus, Train, Plane, Boat, Bike, Truck", answer: "Memorize..." },
+            { question: "Car, Bus, Train, Plane, Boat, Truck", answer: "Missing: Bike" }
+        ]
+    },
+    never_have_i_ever: {
+        title: "Never Have I Ever",
+        icon: "fa-beer",
+        description: "Stand up if you did it.",
+        type: "text_complete",
+        rules: ["If you have done it, Sit Down.", "Last person standing wins.", "Be honest!"],
+        content: [
+            { sentence: "Never have I ever ____", clues: [], answer: "Broken a bone" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Traveled Solo" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Gotten a speeding ticket" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Sung Karaoke" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Eaten Sushi" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Been on TV" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Met a Celebrity" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Stayed up all night" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Fainted in public" },
+            { sentence: "Never have I ever ____", clues: [], answer: "Lied about my age" }
+        ]
+    }
+};

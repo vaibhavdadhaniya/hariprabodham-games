@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 1. Organization & Users
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+  events    Event[]
+  assets    Asset[]
+}
+
+model User {
+  id             String       @id @default(uuid())
+  email          String       @unique
+  passwordHash   String
+  name           String?
+  role           UserRole     @default(HOST)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+}
+
+enum UserRole {
+  ADMIN
+  HOST
+}
+
+// 2. Events & Games
+model Event {
+  id             String         @id @default(uuid())
+  title          String
+  accessCode     String         @unique // The "Game Pin" (e.g. 1234)
+  status         EventStatus    @default(SCHEDULED)
+  organizationId String
+  organization   Organization   @relation(fields: [organizationId], references: [id])
+  participants   Participant[]
+  gameInstances  GameInstance[]
+  createdAt      DateTime       @default(now())
+}
+
+enum EventStatus {
+  SCHEDULED
+  ACTIVE
+  ENDED
+}
+
+model GameInstance {
+  id        String   @id @default(uuid())
+  gameType  String   // "trivia", "poll", "buzzer"
+  config    Json     // Specific settings/questions
+  order     Int      // Run of show order
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+// 3. Participants & Scoring
+model Participant {
+  id        String   @id @default(uuid())
+  name      String
+  socketId  String?  // Current connection
+  score     Int      @default(0)
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+// 4. Assets
+model Asset {
+  id             String       @id @default(uuid())
+  type           String       // "image", "audio"
+  url            String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
